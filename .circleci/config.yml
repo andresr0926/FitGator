@@ -14,9 +14,15 @@ jobs:
             pip install --upgrade pip
             pip install -r requirements.txt
       - run:
-          name: Run tests
+          name: Run tests (with JUnit output)
           command: |
-            python -m pytest -q tests
+            mkdir -p test-results
+            pytest -q tests --junitxml=test-results/junit.xml
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+          destination: test-results
 
 workflows:
   version: 2
