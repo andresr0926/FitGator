@@ -14,8 +14,12 @@ jobs:
             pip install --upgrade pip
             pip install -r requirements.txt
       - run:
+          name: Export PYTHONPATH
+          command: echo 'export PYTHONPATH=$PWD' >> $BASH_ENV
+      - run:
           name: Run tests (with JUnit output)
           command: |
+            source $BASH_ENV
             mkdir -p test-results
             pytest -q tests --junitxml=test-results/junit.xml
       - store_test_results:
