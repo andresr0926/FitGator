@@ -1,0 +1,39 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.11
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run: python -V
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            pip install -r requirements.txt
+      - run:
+          name: Export PYTHONPATH
+          command: echo 'export PYTHONPATH=$PWD' >> $BASH_ENV
+      - run:
+          name: Run tests (with JUnit output)
+          command: |
+            source $BASH_ENV
+            mkdir -p test-results
+            pytest -q tests --junitxml=test-results/junit.xml
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+          destination: test-results
+
+workflows:
+  version: 2
+  ci:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only:
+                - main
